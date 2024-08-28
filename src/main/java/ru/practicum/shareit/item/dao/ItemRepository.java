@@ -11,7 +11,7 @@ public interface ItemRepository {
 
     Item addNewItem(Item item);
 
-    Item modifyItem(Item item, Integer itemId);
+    Item modifyItem(Item item);
 
     Collection<Item> findItemByText(String text);
 }

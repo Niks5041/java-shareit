@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dao.UserRepository;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.request.UserCreateRequest;
+import ru.practicum.shareit.user.dto.response.UserResponse;
+import ru.practicum.shareit.user.dto.request.UserUpdateRequest;
 import ru.practicum.shareit.user.dto.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
@@ -18,28 +20,30 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    public Collection<UserDto> getAllUsers() {
+    public Collection<UserResponse> getAllUsers() {
         log.info("Получаем список всех пользователей из хранилища");
         return userRepository.getAllUsers()
                 .stream()
-                .map(UserMapper::toUserDto)
+                .map(UserMapper::toUserResponse)
                 .collect(Collectors.toList());
     }
 
-    public UserDto addNewUser(User user) {
+    public UserResponse addNewUser(UserCreateRequest userCreateRequest) {
         log.info("Добавляем нового пользователя в хранилище");
-        return UserMapper.toUserDto(userRepository.addNewUser(user));
+        User user = UserMapper.toUser(userCreateRequest);
+        return UserMapper.toUserResponse(userRepository.addNewUser(user));
     }
 
-    public UserDto updateUser(User updatedUser, Integer userId) {
+    public UserResponse updateUser(UserUpdateRequest userUpdateRequest, Integer userId) {
         log.info("Обновляем пользователя в хранилище");
-        return UserMapper.toUserDto(userRepository.updateUser(updatedUser, userId));
+        User user = UserMapper.toUserFromUpdate(userUpdateRequest);
+        return UserMapper.toUserResponse(userRepository.updateUser(user, userId));
     }
 
-    public UserDto getUserById(Integer userId) {
+    public UserResponse getUserById(Integer userId) {
         log.info("Получаем пользователя с ID {}", userId);
         User user = userRepository.findUserById(userId);
-        return UserMapper.toUserDto(user);
+        return UserMapper.toUserResponse(user);
     }
 
     public void deleteUserById(Integer userId) {
